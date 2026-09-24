@@ -1,9 +1,9 @@
 import "dotenv/config";
 
-// import runSimplellmWorkflow from "./simple-llm-workflow.js";
+// import runSimplellmWorkflow from "./linear-workflows/simple-llm-workflow.js";
 // await runSimplellmWorkflow()
 
 
-// import runPromptChainingWorkFlow from "./simple-prompt-chaining-workflow.js"
+// import runPromptChainingWorkFlow from "./linear-workflows/simple-prompt-chaining-workflow.js"
 // await runPromptChainingWorkFlow() 
 
