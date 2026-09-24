@@ -38,7 +38,7 @@ const agent = new StateGraph(MessagesState)
   .addEdge("llmCall", END)
   .compile(); // ← required before invoking
 
-const runSimplellmWorkflow = async () => {
+const runSimpleWorkflow = async () => {
   // invoke the graph or run the graph
   const result = await agent.invoke({
     messages: "what is the capital of India",
@@ -49,4 +49,4 @@ const runSimplellmWorkflow = async () => {
   console.log(result);
 };
 
-export default runSimplellmWorkflow;
+export default runSimpleWorkflow;
