@@ -21,10 +21,13 @@ import "dotenv/config";
 // console.log(result);
 
 
-import runCustomerReviewHandlingAgent from "./conditional-workflows/customer-review-handling.js";
+// import runCustomerReviewHandlingAgent from "./conditional-workflows/customer-review-handling.js";
 // const result = await runCustomerReviewHandlingAgent("I absolutely love this product! The quality is excellent, it arrived earlier than expected, and everything worked perfectly right out of the box. The whole experience was smooth and hassle-free. I’ll definitely buy from you again.")
 
-const result = await runCustomerReviewHandlingAgent("I’m really disappointed with my purchase. The product arrived three days late and had scratches on it. I contacted customer support twice, but nobody responded. I expected much better service and would like this issue resolved as soon as possible.")
-console.log(result);
+// const result1 = await runCustomerReviewHandlingAgent("I’m really disappointed with my purchase. The product arrived three days late and had scratches on it. I contacted customer support twice, but nobody responded. I expected much better service and would like this issue resolved as soon as possible.")
+// console.log(result1);
 
+// import generateXPost from "./looping-workflow/x-post-generator.js";
+// const result = await generateXPost("I learned that knowing React isn't enough to become a good frontend developer. You also need to understand browser fundamentals, HTTP, accessibility, performance, and how the web actually works.")
+// console.log(result) 
 
