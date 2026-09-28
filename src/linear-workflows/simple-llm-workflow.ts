@@ -1,6 +1,5 @@
 // state -> llmCall -> end
 
-import "dotenv/config";
 import { StateGraph, StateSchema, START, END } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import type { GraphNode } from "@langchain/langgraph";

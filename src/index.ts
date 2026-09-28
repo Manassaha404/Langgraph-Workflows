@@ -31,3 +31,5 @@ import "dotenv/config";
 // const result = await generateXPost("I learned that knowing React isn't enough to become a good frontend developer. You also need to understand browser fundamentals, HTTP, accessibility, performance, and how the web actually works.")
 // console.log(result) 
 
+import startChatBot from "./chat-bot/chat-bot-workflow.js";
+startChatBot() 

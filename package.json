@@ -13,8 +13,10 @@
   "dependencies": {
     "@langchain/core": "^1.2.11",
     "@langchain/langgraph": "^1.4.16",
+    "@langchain/langgraph-checkpoint-redis": "^1.0.11",
     "@langchain/openai": "^1.5.13",
     "dotenv": "^18.0.1",
+    "ioredis": "^6.0.0",
     "langchain": "^1.5.11",
     "zod": "^4.6.5"
   },
