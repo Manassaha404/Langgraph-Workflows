@@ -32,4 +32,4 @@ import "dotenv/config";
 // console.log(result) 
 
 import startChatBot from "./chat-bot/chat-bot-workflow.js";
-startChatBot() 
+startChatBot("user-3") 
