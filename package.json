@@ -11,6 +11,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
+    "@composio/core": "^0.22.0",
+    "@composio/langchain": "^0.11.1",
     "@langchain/core": "^1.2.11",
     "@langchain/langgraph": "^1.4.16",
     "@langchain/langgraph-checkpoint-postgres": "^1.0.5",
