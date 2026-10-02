@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { randomUUID } from "crypto";
 import * as readline from "readline";
 import {
@@ -287,7 +288,7 @@ const MessagesState = new StateSchema({
 });
 
 // for trimming recent chats with ai
-const MAX_TOKENS = 20000;
+const MAX_TOKENS = 64000;
 const trimmer = trimMessages({
   maxTokens: MAX_TOKENS,
   strategy: "last", // keep the newest messages
