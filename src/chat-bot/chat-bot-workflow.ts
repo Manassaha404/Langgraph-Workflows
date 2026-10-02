@@ -595,63 +595,94 @@ Stay under 150 words. Return only the summary text.`;
 };
 
 // long term memory generation node
-const ExtractedMemories = z.object({
-  facts: z
-    .array(z.string())
-    .describe("Durable facts about the user that are not already stored"),
+const MemoryOps = z.object({
+  operations: z.array(
+    z.object({
+      action: z.enum(["add", "update", "delete"]).describe(
+        "add = new fact, update = replace existing by ref number, delete = remove existing by ref number",
+      ),
+      text: z
+        .string()
+        .nullable()
+        .describe("Fact text — required for 'add' and 'update', null for 'delete'"),
+      ref: z
+        .number()
+        .int()
+        .nullable()
+        .describe("Index of the existing memory to update or delete, null for 'add'"),
+    }),
+  ),
 });
+
 const extractor = new ChatOpenAI({
   model: "gpt-4o-mini",
   temperature: 0,
-}).withStructuredOutput(ExtractedMemories);
+}).withStructuredOutput(MemoryOps);
+
 const generateLongTermMemory: GraphNode<typeof MessagesState> = async (
   state,
   config: LangGraphRunnableConfig,
 ) => {
-  // named memStore so it dont clash with global store
   const memStore = config.store;
   if (!memStore) return {};
-  // extract latest ai and human sms
-  // skip empty ai sms (tool call turns have no text)
+
   const msgs = [...state.messages].reverse();
   const lastAi = msgs.find((m) => m.type === "ai" && textOf(m.content).trim());
   const lastHuman = msgs.find((m) => m.type === "human");
   if (!lastHuman) return {};
-  // grab userId
+
   const userId = config.configurable?.user_id ?? "anonymous";
   const namespace = ["memories", userId];
 
-  // grab existing memory for prevent duplication
   const existing = await memStore.search(namespace, {
     query: textOf(lastHuman.content),
-    limit: 5,
+    limit: 10, // a bit higher so contradicting facts are more likely to show up
   });
 
-  // grab the result
-  const result =
-    await extractor.invoke(`You extract long-term memories about a user from a chat exchange.
+  // Use small integer refs instead of UUIDs: the LLM can't hallucinate a key
+  // and you map back to the real key yourself.
+  const existingList = existing.length
+    ? existing.map((h, i) => `[${i}] ${h.value.text}`).join("\n")
+    : "(none)";
 
-Already stored memories:
-${existing.length ? existing.map((h) => `- ${h.value.text}`).join("\n") : "(none)"}
+  const result = await extractor.invoke(`You maintain long-term memories about a user.
+
+Existing memories:
+${existingList}
 
 New exchange:
 User: ${textOf(lastHuman.content)}
 Assistant: ${textOf(lastAi?.content)}
 
 Rules:
-- Only save durable facts the USER stated about themselves: identity, role, projects, tech stack, preferences, goals, constraints.
-- Write each as a short, standalone sentence, e.g. "User prefers TypeScript over Python".
-- Do NOT save: small talk, one-off questions, things only the assistant said, or anything already in the stored memories.
-- Never save secrets (passwords, API keys, tokens, card or ID numbers) or sensitive personal data.
+- Only use durable facts the USER stated about themselves: identity, role, projects, tech stack, preferences, goals, constraints.
+- If the user states something that CONTRADICTS or CHANGES an existing memory, use "update" with that memory's number and the full new fact.
+- If the user says an existing memory is no longer true and there is no replacement, use "delete".
+- Use "add" only for genuinely new facts not covered by any existing memory.
+- Do NOT save small talk, one-off questions, or things only the assistant said.
+- Never save secrets or sensitive personal data.
 - If nothing qualifies, return an empty list.`);
 
-  // store it in store
   await Promise.all(
-    result.facts.map((text) => memStore.put(namespace, randomUUID(), { text })),
+    result.operations.map(async (op) => {
+      if (op.action === "add") {
+        if (!op.text) return; // model returned null text, skip
+        return memStore.put(namespace, randomUUID(), { text: op.text });
+      }
+      if (typeof op.ref !== "number") return; // update/delete require a valid ref (null fails this check)
+      const target = existing[op.ref];
+      if (!target) return; // ignore out-of-range refs
+      if (op.action === "update") {
+        if (!op.text) return; // model returned null text, skip
+        // same key => overwrites the old value
+        return memStore.put(namespace, target.key, { text: op.text });
+      }
+      return memStore.delete(namespace, target.key);
+    }),
   );
 
-  if (result.facts.length) {
-    console.log(`[memory] saved ${result.facts.length}:`, result.facts);
+  if (result.operations.length) {
+    console.log("[memory] ops:", result.operations);
   }
   return {};
 };
