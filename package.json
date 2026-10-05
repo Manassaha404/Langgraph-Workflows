@@ -13,18 +13,26 @@
   "dependencies": {
     "@composio/core": "^0.22.0",
     "@composio/langchain": "^0.11.1",
+    "@langchain/community": "^1.1.29",
     "@langchain/core": "^1.2.11",
     "@langchain/langgraph": "^1.4.16",
     "@langchain/langgraph-checkpoint-postgres": "^1.0.5",
     "@langchain/langgraph-checkpoint-redis": "^1.0.11",
     "@langchain/openai": "^1.5.13",
+    "@langchain/qdrant": "^1.0.3",
+    "@langchain/textsplitters": "^1.0.2",
+    "@tavily/core": "^0.7.13",
     "dotenv": "^18.0.1",
+    "html-to-text": "^10.0.1",
     "ioredis": "^6.0.0",
     "langchain": "^1.5.11",
     "mem0ai": "^3.3.1",
+    "pdf-parse": "^2.4.5",
+    "xlsx": "^0.18.5",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
     "@types/node": "^26.6.2",
     "tsc-watch": "^7.2.1",
     "typescript": "^7.0.2"
